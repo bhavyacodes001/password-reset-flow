@@ -1,25 +1,14 @@
 /**
  * utils/sendEmail.js - Email Sending Utility
  * 
- * Configures Nodemailer with Gmail SMTP (port 587 + STARTTLS)
- * and sends a password reset email with an HTML template.
- * Port 587 is used because port 465 is blocked on many cloud hosts.
+ * Uses Resend HTTP API to send password reset emails.
+ * Resend is used instead of direct SMTP because Render's
+ * free tier blocks outbound SMTP ports (465, 587).
  */
 
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 15000,
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
  * Sends a password reset email to the specified address.
@@ -29,8 +18,8 @@ const transporter = nodemailer.createTransport({
 const sendResetEmail = async (toEmail, resetToken) => {
   const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
 
-  const mailOptions = {
-    from: `"Password Reset" <${process.env.EMAIL_USER}>`,
+  await resend.emails.send({
+    from: "Password Reset <onboarding@resend.dev>",
     to: toEmail,
     subject: "Password Reset Request",
     html: `
@@ -58,9 +47,7 @@ const sendResetEmail = async (toEmail, resetToken) => {
         </p>
       </div>
     `,
-  };
-
-  await transporter.sendMail(mailOptions);
+  });
 };
 
 module.exports = sendResetEmail;
