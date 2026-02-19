@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Nav, Tab, Form, Button, Alert, Spinner, InputGroup, Badge } from "react-bootstrap";
 import axios from "axios";
 
-const API_URL = "http://localhost:5001/api/auth";
+import API_URL from "../config";
 
 function Home() {
   const navigate = useNavigate();

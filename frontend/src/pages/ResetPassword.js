@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Container, Card, Form, Button, Alert, Spinner, InputGroup } from "react-bootstrap";
 import axios from "axios";
 
-const API_URL = "http://localhost:5001/api/auth";
+import API_URL from "../config";
 
 function ResetPassword() {
   const { token } = useParams();
