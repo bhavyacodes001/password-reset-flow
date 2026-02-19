@@ -8,13 +8,17 @@
 
 const nodemailer = require("nodemailer");
 
-// Configure Gmail SMTP transporter using app password
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 15000,
 });
 
 /**
@@ -23,7 +27,6 @@ const transporter = nodemailer.createTransport({
  * @param {string} resetToken - The unique token for password reset
  */
 const sendResetEmail = async (toEmail, resetToken) => {
-  // Build the reset link pointing to the frontend reset page
   const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
 
   const mailOptions = {

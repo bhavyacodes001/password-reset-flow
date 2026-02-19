@@ -194,8 +194,20 @@ router.post("/forgot-password", async (req, res) => {
     user.resetTokenExpiry = tokenExpiry;
     await user.save();
 
-    // Step 4: Send the reset email with the token link
-    await sendResetEmail(user.email, resetToken);
+    // Step 4: Send the reset email with the token link (with 15s timeout)
+    const emailPromise = sendResetEmail(user.email, resetToken);
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Email sending timed out")), 15000)
+    );
+
+    try {
+      await Promise.race([emailPromise, timeoutPromise]);
+    } catch (emailError) {
+      console.error("Email sending failed:", emailError.message);
+      return res.status(500).json({
+        message: "Failed to send reset email. Please try again in a moment.",
+      });
+    }
 
     res.json({ message: "Password reset link has been sent to your email" });
   } catch (error) {
