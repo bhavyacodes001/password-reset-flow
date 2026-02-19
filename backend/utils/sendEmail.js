@@ -1,17 +1,17 @@
 /**
  * utils/sendEmail.js - Email Sending Utility
  * 
- * Configures Nodemailer with Gmail SMTP and sends
- * a password reset email containing an HTML template
- * with a clickable reset link.
+ * Configures Nodemailer with Gmail SMTP (port 587 + STARTTLS)
+ * and sends a password reset email with an HTML template.
+ * Port 587 is used because port 465 is blocked on many cloud hosts.
  */
 
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
