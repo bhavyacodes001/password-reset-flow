@@ -1,25 +1,12 @@
-/**
- * utils/sendEmail.js - Email Sending Utility
- * 
- * Uses Resend HTTP API to send password reset emails.
- * Resend is used instead of direct SMTP because Render's
- * free tier blocks outbound SMTP ports (465, 587).
- */
-
 const { Resend } = require("resend");
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-/**
- * Sends a password reset email to the specified address.
- * @param {string} toEmail - Recipient's email address
- * @param {string} resetToken - The unique token for password reset
- */
 const sendResetEmail = async (toEmail, resetToken) => {
   const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
 
   await resend.emails.send({
-    from: "Password Reset <onboarding@resend.dev>",
+    from: `Password Reset <${process.env.RESEND_FROM || "onboarding@resend.dev"}>`,
     to: toEmail,
     subject: "Password Reset Request",
     html: `
